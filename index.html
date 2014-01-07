@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GIS-History</title>
+	<link rel="stylesheet" href="components/lungo.brownie/lungo.css">
+	<link rel="stylesheet" href="components/lungo.icon/lungo.icon.css">
+	<link rel="stylesheet" href="components/lungo.brownie/lungo.theme.css">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+      #map-cl, #map-br {
+        height: 100%;
+        width: 100%;
+        
+        margin: 0px;
+        padding: 10px
+                
+      }
+    
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"></script>
+
+</head>
+<body>
+<section id="main" data-transition="slide">
+	<header data-title="Sejarah Bukittinggi">
+		<!--Navigasi untuk menu sidebar di kiri-->
+		<nav class="left box">
+			<a href="#" data-view-aside="menu" data-icon="grid" class="drag"></a>
+		</nav>
+	</header>	
+	 <article id="list-indented" class="list scroll indented"> 
+    		<div class="empty">
+                <span class="icon globe"></span>
+                <strong>GIS - Sejarah </strong>
+                <small>Aplikasi pencarian tempat bersejarah di Kota Bukittinggi</small>
+            </div>
+           
+        </article>
+      
+    
+    <footer>
+    <center>SI UNAND 2010</center>
+    </footer>
+
+	</section>
+    <script src="components/quojs/quo.js"></script>
+    <script src="components/lungo/lungo.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script>
+	Lungo.init({
+        resources: ['aside/menu.html']
+    });
+    </script>
+  
+        
+ <script>
+function get(){
+    var checkData1 = $('#uel li').size();
+	if(checkData1=='0'){
+        $.ajax({
+            url: 'http://gis2010.besaba.com/cuik/ambil.php',
+            dataType: 'jsonp',
+            jsonp: 'jsoncallback',
+            timeout: 5000,
+            success: function(data, status){
+                $.each(data, function(i,item){
+                    $("#uel").append('<li class="thumb big"><img src="http://gis2010.besaba.com/cuik/img/'+item.fotosjr+'.JPG" /><div>'+ item.namasjr +'<small>'+ item.almsjr +'</small></div><li id="readmore" style="display: none;"><span class="text tiny">'+ item.ketsjr +'</span><button data-view-section="map-spesifik" data-async="map-spes.html" onClick="info('+item.latsjr+','+item.lngsjr+');">Find</button></li></li>');
+                });
+               
+            },
+            error: function(){
+                alert('Error terjadi');
+            }
+        });
+    }else {
+        $("#uel").show();		
+	}
+    
+   	var Total = parseInt(checkData1)/2;
+	$$('a[name="list"] > data-count').html(Total);
+    
+    Lungo.dom('#info-art li').tap(function(event) {
+		event.stopPropagation();
+		if($(this).find('#info-art li').hasClass('active')) {
+			Lungo.dom('#info-art li').removeClass('active');
+		}else{
+			Lungo.dom('#info-art li').removeClass('active');
+			Lungo.dom(this).toggleClass('active');
+			$(this).next().toggle();	
+		}
+	});
+}
+     
+
+</script>
+   
+    <script>
+function info(a,b) {
+var map;
+  var mapOptions = {
+    zoom: 17,
+    mapTypeId: google.maps.MapTypeId.RoadMap
+  };
+  map = new google.maps.Map(document.getElementById('map-br'),
+      mapOptions);
+
+  var pos = new google.maps.LatLng(a,b);
+    var marker = new google.maps.Marker({
+      position: pos,
+      map: map
+    });
+    map.setCenter(pos);
+  
+    
+}
+        </script>
+    <script>
+var map;
+
+function initialize() {
+  var mapOptions = {
+    zoom: 15,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  };
+  map = new google.maps.Map(document.getElementById('map-cl'),
+      mapOptions);
+
+  // Try HTML5 geolocation
+  if(navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var pos = new google.maps.LatLng(position.coords.latitude,
+                                       position.coords.longitude);
+    var marker = new google.maps.Marker({
+      position: pos,
+      map: map,
+      title: 'Kamu Disini!'
+  });
+    map.setCenter(pos);
+    }, function() {
+      handleNoGeolocation(true);
+    });
+  }
+    
+}
+</script>
+
+
+</body>
+</html>
